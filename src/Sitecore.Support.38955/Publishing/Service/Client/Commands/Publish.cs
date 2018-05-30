@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Reflection;
 using System.Web;
 
 namespace Sitecore.Support.Publishing.Service.Client.Commands
@@ -19,13 +20,25 @@ namespace Sitecore.Support.Publishing.Service.Client.Commands
       string itemPath = args.Parameters["id"];
       string name = args.Parameters["language"];
       string value = args.Parameters["version"];
+
+      // 38955 Check if item was modified before publishing
+      if (!SheerResponse.CheckModified(new CheckModifiedParameters
+      {
+        ResumePreviousPipeline = true
+      }))
+      {
+        return;
+      }
+
       Item item = Context.ContentDatabase.Items[itemPath, Language.Parse(name), Sitecore.Data.Version.Parse(value)];
       if (item == null)
       {
         SheerResponse.Alert("Item not found.", new string[0]);
         return;
       }
-      if (!this.IsWorkflowPublishable(args, item))
+      if (!(bool)typeof(Sitecore.Publishing.Service.Client.Commands.Publish)
+        .GetMethod("IsWorkflowPublishable", BindingFlags.Instance | BindingFlags.NonPublic)
+        .Invoke(this, new object[] { args, item }))
       {
         return;
       }
