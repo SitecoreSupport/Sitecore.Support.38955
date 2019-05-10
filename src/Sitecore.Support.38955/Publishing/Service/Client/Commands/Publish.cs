@@ -11,6 +11,7 @@ using System.Web;
 
 namespace Sitecore.Support.Publishing.Service.Client.Commands
 {
+  [Serializable]
   public class Publish : Sitecore.Publishing.Service.Client.Commands.Publish
   {
     protected void Run(ClientPipelineArgs args)

@@ -9,6 +9,7 @@ using System.Collections.Specialized;
 
 namespace Sitecore.Support.Publishing.Service.Client.Commands
 {
+  [Serializable]
   public class PublishSite : Sitecore.Publishing.Service.Client.Commands.PublishSite
   {
     public override void Execute(CommandContext context)
